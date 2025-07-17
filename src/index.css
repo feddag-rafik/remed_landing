@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.cta-section {
+    /* background: red !important; */
+    margin:30px;
+    border-radius: 20px;
+    background-image: url('./assets/c4e5c6b2-86c3-4d0d-bf6a-df96f4ea97f72.png');
+    background-size:cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
