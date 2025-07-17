@@ -1,7 +1,7 @@
 import { ArrowRight, CheckCircle, Play } from "lucide-react";
 import { BiMicrophone } from "react-icons/bi";
 import heroImage from "./assets/c4e5c6b2-86c3-4d0d-bf6a-df96f4ea97f72.png";
-
+// hello
 export function HeroSection() {
   return (
     <section className="relative bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-24 overflow-hidden">
