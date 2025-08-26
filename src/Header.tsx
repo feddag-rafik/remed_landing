@@ -10,42 +10,51 @@ export function Header() {
     <header className="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          <div className="flex items-center space-x-3">
+          <a href="#hero" className="flex items-center space-x-3">
             <div className="bg-blue-600 p-2 rounded-xl">
               <Stethoscope className="h-6 w-6 text-white" />
             </div>
             <span className="text-2xl font-bold text-blue-600">REMED</span>
-          </div>
+          </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className=" md:flex space-x-8">
             <a
-              href="#features"
+              href="#benefits"
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
             >
-              Fonctionnalités
+              Avantages
             </a>
             <a
               href="#ai"
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
             >
-              Outils IA
+              Fonctionnalités
             </a>
+
             <a
               href="#testimonials"
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
             >
-              Témoignages
+              Avis
             </a>
+
             <a
-              href="#pricing"
+              href="#faq"
               className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
             >
-              Tarifs
+              FAQ
+            </a>
+
+            <a
+              href="#contact"
+              className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+            >
+              Nous contacter
             </a>
           </nav>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className=" md:flex items-center space-x-4">
             {/* <button className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
               Se connecter
             </button> */}
@@ -109,4 +118,4 @@ export function Header() {
       </div>
     </header>
   );
-} 
+}

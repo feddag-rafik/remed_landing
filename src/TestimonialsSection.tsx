@@ -14,7 +14,7 @@ export function TestimonialsSection() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid mc1 md:grid-cols-3 gap-8">
           <div className="bg-gradient-to-br from-blue-50 to-white p-8 rounded-2xl border border-blue-100">
             <div className="flex items-center mb-6">
               {[...Array(5)].map((_, i) => (

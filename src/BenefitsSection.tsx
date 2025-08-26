@@ -1,9 +1,12 @@
-import { Clock, Shield, Users } from "lucide-react";
+import { Clock, Shield } from "lucide-react";
+import { FaRegHandPointer } from "react-icons/fa6";
 import { PiGear } from "react-icons/pi";
+import { InViewStaggeredAnimation } from "./staggeredAnimation";
 
 export function BenefitsSection() {
   return (
     <section
+      id="benefits"
       className="py-24 bg-gradient-to-br"
       style={{
         background:
@@ -22,52 +25,60 @@ export function BenefitsSection() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="text-center">
-            <div className="bg-white/10 backdrop-blur-sm w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <PiGear className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">Performance</h3>
-            <p className="text-blue-100">
-              Développez votre cabinet avec des flux de travail automatisés
-            </p>
-          </div>
-          
-          <div className="text-center">
-            <div className="bg-white/10 backdrop-blur-sm w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Clock className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">Gain de temps</h3>
-            <p className="text-blue-100">
-              Réduisez le temps de documentation avec l'automatisation alimentée
-              par l'IA
-            </p>
-          </div>
+        <div className="mc1 grid md:grid-cols-2 lg:grid-cols-4 gap-16">
+          <BenefitCard
+            index={0}
+            title="Performance"
+            description="Développez votre cabinet avec des flux de travail automatisés"
+            icon={<PiGear className="h-10 w-10 text-white" />}
+          />
 
-          <div className="text-center">
-            <div className="bg-white/10 backdrop-blur-sm w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Shield className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">Securité</h3>
-            <p className="text-blue-100">
-              Conforme HIPAA avec sécurité de niveau entreprise
-            </p>
-          </div>
+          <BenefitCard
+            index={1}
+            title="Gain de temps"
+            description="Réduisez le temps de documentation avec l'automatisation alimentée par l'IA"
+            icon={<Clock className="h-10 w-10 text-white" />}
+          />
 
-          <div className="text-center">
-            <div className="bg-white/10 backdrop-blur-sm w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Users className="h-10 w-10 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">
-              Facilité d'utilisation
-            </h3>
-            <p className="text-blue-100">
-              Améliorez les soins aux patients avec des insights basés sur les
-              données
-            </p>
-          </div>
+          <BenefitCard
+            index={2}
+            title="Securité"
+            description="Vos données sont chiffrées de bout en bout et sauvegardées automatiquement."
+            icon={<Shield className="h-10 w-10 text-white" />}
+          />
+
+          <BenefitCard
+            index={3}
+            title="Facilité d'utilisation"
+            description="Design intuitif et facile à utiliser sur tous PC, tablette et smartphone."
+            icon={<FaRegHandPointer  className="h-10 w-10 text-white" />}
+          />
         </div>
       </div>
     </section>
+  );
+}
+
+function BenefitCard({
+  index,
+  title,
+  description,
+  icon,
+}: {
+  index: number;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <InViewStaggeredAnimation index={index}>
+      <div className="text-center">
+        <div className="bg-white/10 backdrop-blur-sm w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+          {icon}
+        </div>
+        <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
+        <p className="text-blue-100">{description}</p>
+      </div>
+    </InViewStaggeredAnimation>
   );
 }

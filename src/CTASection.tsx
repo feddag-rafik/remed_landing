@@ -32,9 +32,9 @@ export function CTASection() {
           puissance de l'IA.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-8">
-          <button className="bg-white text-blue-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl shadow-black/20 flex items-center">
-            Commencez votre essai gratuit
+        <div className="mc1 grid grid-cols-2 gap-6 justify-center items-center mb-8">
+          <button className="center c1-auto bg-white text-blue-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl shadow-black/20 flex items-center">
+            Téléchargez maintenant
             <ArrowRight className="ml-2 h-5 w-5" />
           </button>
           <button className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white hover:text-purple-600 transition-all">
