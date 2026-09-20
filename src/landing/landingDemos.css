@@ -1,0 +1,55 @@
+/* Landing-only integration. Application globals never enter this bundle. */
+.ld-demo-slot { position:relative; min-width:0; width:100%; aspect-ratio:1000/650; isolation:isolate; }
+#remed-landing .ld-demo-slot { border:1px solid var(--remed-border); border-radius:18px; overflow:hidden; box-shadow:var(--remed-shadow-card); background:var(--remed-page-bg); }
+#remed-landing #hero .ld-demo-slot { box-shadow:0 20px 65px rgb(37 70 115 / 13%); }
+#remed-landing .ld-ai-grid { display:grid; gap:28px; }
+#remed-landing .ld-ai-card { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr); gap:36px; align-items:center; padding:32px; border:1px solid var(--remed-border); border-radius:var(--landing-card-radius); border-color:var(--landing-glass-border); background:var(--landing-glass-fill); background-image:var(--landing-glass-sheen); box-shadow:var(--landing-shadow); -webkit-backdrop-filter:blur(32px); backdrop-filter:blur(32px); }
+#remed-landing .ld-ai-copy { min-width:0; }
+#remed-landing .ld-eyebrow { display:block; font-size:11px; letter-spacing:.12em; font-weight:650; color:var(--remed-primary); margin-bottom:20px; }
+#remed-landing .ld-ai-copy h3 { color:var(--remed-text); font-size:clamp(23px,2.1vw,30px); line-height:1.25; letter-spacing:-.025em; margin:0 0 16px; font-weight:650; }
+#remed-landing .ld-ai-copy p { color:var(--remed-text-muted); font-size:15px; line-height:1.8; margin:0 0 24px; }
+#remed-landing .ld-watch-link { display:inline-flex; align-items:center; gap:14px; color:var(--remed-primary); font-weight:600; font-size:14px; }
+.ld-open-status { display:block; font:12px/1.5 var(--remed-font-family); color:var(--remed-text-muted); margin:6px 0; }
+.ld-login-drawer { position:fixed; inset:0 0 0 auto; width:min(520px,100%); max-width:100%; height:100%; height:100dvh; max-height:none; margin:0; padding:0; border:0; border-radius:var(--remed-radius-drawer) 0 0 var(--remed-radius-drawer); color:var(--remed-text); background:var(--remed-surface); box-shadow:var(--remed-shadow-drawer); font-family:var(--remed-font-family); overflow:hidden; }
+.ld-login-drawer[open] { display:flex; flex-direction:column; animation:ld-drawer-enter .2s ease-out; }
+.ld-login-drawer::backdrop { background:var(--remed-overlay); }
+.ld-login-header { display:flex; flex:none; align-items:center; justify-content:space-between; gap:16px; padding:24px; border-bottom:1px solid var(--remed-border); }
+.ld-login-header h2 { font-size:18px; font-weight:600; margin:0; }
+.ld-login-close { width:40px; height:40px; display:grid; place-items:center; border:1px solid var(--remed-border); border-radius:12px; background:var(--remed-surface-muted); font-size:22px; cursor:pointer; color:var(--remed-text-muted); }
+.ld-login-body { position:relative; flex:1; min-height:0; overflow:auto; }
+.ld-login-frame { width:100%; height:100%; min-height:440px; border:0; display:block; background:var(--remed-surface); }
+.ld-login-frame[hidden] { display:none; }
+.ld-login-loading, .ld-login-error { padding:clamp(24px,6vw,44px); display:flex; flex-direction:column; justify-content:center; gap:18px; min-height:380px; }
+.ld-login-loading[hidden], .ld-login-error[hidden] { display:none; }
+.ld-login-loading h3, .ld-login-error h3 { font-size:22px; margin:0; }
+.ld-login-loading p, .ld-login-error p { font-size:14px; line-height:1.6; color:var(--remed-text-muted); margin:0; }
+.ld-login-skeleton { height:48px; border-radius:var(--remed-radius-control); background:linear-gradient(100deg,var(--remed-surface-muted) 20%,var(--remed-border) 48%,var(--remed-surface-muted) 80%); background-size:220% 100%; animation:ld-skeleton 1.5s linear infinite; }
+.ld-login-error button, .ld-login-error a { border:1px solid var(--remed-border); border-radius:12px; padding:12px 18px; text-align:center; font:600 14px var(--remed-font-family); background:var(--remed-surface); color:var(--remed-primary); cursor:pointer; text-decoration:none; }
+.ld-login-error button { background:var(--remed-primary); color:white; }
+.ld-login-drawer :focus-visible, .ld-watch-link:focus-visible { outline:3px solid var(--remed-primary); outline-offset:3px; }
+@keyframes ld-drawer-enter { from { transform:translateX(100%); } to { transform:translateX(0); } }
+@keyframes ld-skeleton { to { background-position:-220% 0; } }
+@media(max-width:800px) {
+  #remed-landing .ld-ai-card { grid-template-columns:minmax(0,1fr); padding:20px; gap:24px; }
+  #remed-landing .ld-ai-copy p { margin-bottom:14px; }
+  #remed-landing .ld-eyebrow { margin-bottom:12px; }
+  #remed-landing .ld-ai-card .ld-demo-slot { margin:0; }
+}
+@media(max-width:520px) { .ld-login-drawer { border-radius:0; } .ld-login-header { padding:16px; } }
+@media(max-width:600px) { .ld-demo-slot { aspect-ratio:740/650; } }
+@media(prefers-reduced-motion:reduce) { .ld-login-drawer[open], .ld-login-skeleton { animation:none; } }
+
+#remed-landing #hero .ld-demo-slot { aspect-ratio:1100/820; overflow:visible; border:0; border-radius:0; background:transparent; box-shadow:none; }
+@media(max-width:600px) { #remed-landing #hero .ld-demo-slot { aspect-ratio:740/820; } }
+
+/* The 1000px desktop screen fills its content column exactly. The extra
+   100px in the composition is reserved for the phone and its shadow. */
+@media(min-width:1024px) {
+  #remed-landing #hero h1 { font-size:clamp(32px, 3.2vw, 44px); }
+  #remed-landing #hero > div > .grid { grid-template-columns:minmax(0, .8fr) minmax(0, 1.2fr); }
+  #remed-landing #hero .ld-hero-visual { width:110%; min-width:0; }
+}
+@media(max-width:1023px) {
+  #remed-landing #hero > .max-w-7xl { padding-inline:max(20px, env(safe-area-inset-right)); }
+  #remed-landing #hero .ld-hero-visual { width:100%; min-width:0; }
+}
