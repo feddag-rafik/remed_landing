@@ -1,0 +1,514 @@
+.page {
+  container: remed-encounter / inline-size;
+  min-width: 0;
+  background: var(--remed-encounter-page-bg, var(--remed-page-bg));
+  padding: var(--remed-page-padding);
+}
+
+.clinicalCompartments {
+  --encounter-compartment-gap-increase: 10px;
+  --encounter-header-divider: 0;
+  --encounter-header-padding: 0;
+  --encounter-action-size: 40px;
+  --encounter-action-padding: 9px 10px;
+  --encounter-action-radius: 8px;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--remed-space-4);
+  margin-bottom: var(--remed-space-6);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: var(--remed-space-3);
+  min-width: 0;
+}
+
+.heading > div { min-width: 0; }
+.heading h2 {
+  margin: 0;
+  color: var(--remed-text);
+  font-size: var(--remed-font-title);
+  font-weight: var(--remed-weight-strong);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.heading p {
+  margin: var(--remed-space-1) 0 0;
+  color: var(--remed-text-muted);
+  font-size: var(--remed-font-small);
+}
+.icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 var(--remed-input-height);
+  height: var(--remed-input-height);
+  border: 1px solid var(--remed-border);
+  border-radius: var(--remed-radius-control);
+  background: var(--remed-surface);
+  color: var(--remed-primary);
+}
+.actions { min-width: 0; margin-inline-start: auto; }
+.hospitalHeaderActions, .hospitalTitle, .hospitalPatientDetails {
+  display: flex;
+  align-items: center;
+  gap: var(--remed-space-2);
+  min-width: 0;
+}
+.hospitalHeaderActions { white-space: nowrap; flex-shrink: 0; }
+.hospitalHeaderActions :global(.btn), .hospitalPatientDetails :global(.btn) {
+  padding: 9px 14px;
+  font-size: 12px;
+}
+.hospitalTitle, .hospitalPatientDetails { flex-wrap: wrap; }
+.hospitalPatientName { min-width: 0; text-transform: capitalize; overflow-wrap: anywhere; }
+.hospitalPatientDetails > :global(.normal) { white-space: nowrap; }
+.hospitalInvoiceAction { width: fit-content; max-width: 100%; font-size: 12px; }
+.hospitalInvoiceAction:empty { display: none; }
+.hospitalInvoiceAction :global(.admissionInvoiceButton) { white-space: nowrap; }
+
+@media (max-width: 480px) {
+  .hospitalHeaderActions { gap: 4px; }
+  .hospitalHeaderActions > button, .hospitalHeaderActions :global(.btn) { padding: 9px 8px; }
+  .hospitalHeaderActions :global(.gap10) { gap: 4px; }
+}
+
+.body, .stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: calc(var(--remed-space-6) + var(--encounter-compartment-gap-increase, 0px));
+  min-width: 0;
+}
+.stack { gap: calc(var(--remed-space-4) + var(--encounter-compartment-gap-increase, 0px)); }
+.grid, .hospitalGrid, .treatmentGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: calc(var(--remed-space-4) + var(--encounter-compartment-gap-increase, 0px));
+  min-width: 0;
+}
+.clinicalCompartments .grid, .hospitalGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.hospitalGrid:global(.c4) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.clinicalCompartments .grid, .clinicalCompartments .hospitalGrid, .clinicalCompartments .grid > .stack { gap: calc(var(--remed-space-4) + 5px + var(--encounter-compartment-gap-increase, 0px)); }
+.clinicalCompartments .grid > .stack { align-content: stretch; }
+.treatmentGrid { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); }
+.grid > *, .hospitalGrid > *, .treatmentGrid > *, .body > *, .stack > * { min-width: 0; }
+.wide { grid-column: span 2; }
+.hospitalTreatment { grid-column: span 3; }
+.fullWidth { grid-column: 1 / -1; }
+
+.page :global(.compartment) {
+  min-width: 0;
+  border: 1px solid var(--remed-card-border, var(--remed-encounter-card-border, var(--remed-border)));
+  border-radius: var(--remed-radius-card);
+  background: var(--remed-card-bg, var(--remed-encounter-card-fill, var(--remed-surface)));
+  background-image: var(--remed-encounter-card-sheen, none);
+  box-shadow: var(--remed-encounter-card-shadow, var(--remed-shadow-card));
+  padding: var(--remed-space-4);
+  gap: var(--remed-space-4);
+}
+.page :global(.compartment:not(.compact)) {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+}
+.page.clinicalCompartments :global(.compartment:is(#motiveCompartment, #diagnosticsCompartment, #storyCompartment):not(.compact)) {
+  padding-block: var(--remed-space-2);
+  gap: var(--remed-space-2);
+}
+.page :global(:is(#motiveCompartment, #diagnosticsCompartment) .fieldAnswersList),
+.page :global(:is(#motiveCompartment, #diagnosticsCompartment) .fieldAnswersList .c1) {
+  row-gap: 3px !important;
+}
+.page :global(.clinicalReferenceCard) {
+  border: 0;
+  box-shadow: none !important;
+  background: var(--remed-card-bg, var(--remed-selected-bg)) !important;
+}
+.page.clinicalCompartments :global(.itemCard.ordonnanceCard) {
+  background: var(--remed-card-bg, var(--remed-surface)) !important;
+}
+.page :global(.clinicalReferenceCard:hover) {
+  background: var(--remed-card-hover-bg, var(--remed-hover-bg)) !important;
+}
+.page :global(.patientMesureCard) {
+  border: 0;
+  border-radius: var(--remed-radius-control);
+  padding: var(--remed-antecedent-padding);
+  box-shadow: none !important;
+  background: var(--remed-card-bg, var(--remed-selected-bg)) !important;
+}
+.page :global(.patientMesureCard:hover) {
+  background: var(--remed-card-hover-bg, var(--remed-hover-bg)) !important;
+}
+.page :global(.patientMesureIcon) {
+  color: var(--remed-selected-text);
+  justify-self: end;
+}
+.page :global(.patientMesureLayout) {
+  grid-template-columns: minmax(0, 1fr) 28px;
+  grid-template-areas:
+    "name icon"
+    "values values";
+}
+.page :global(.patientMesureName) {
+  color: var(--remed-selected-text);
+  font-size: var(--remed-font-small);
+  text-align: left;
+}
+.page :global(.patientMesureValues) { text-align: left; }
+.page :global(.patientMesureValueLine) {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  white-space: normal;
+}
+.page :global(.patientMesureValue) {
+  color: var(--remed-text);
+  font-size: calc(var(--remed-font-body, 14px) + 2px);
+}
+.page :global(.patientMesureUnit) {
+  color: var(--remed-text-muted);
+  font-size: var(--remed-font-small);
+}
+.page :global(.compartment:not(.compact) > .header) {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--remed-space-3);
+  min-width: 0;
+  padding-bottom: var(--encounter-header-padding, var(--remed-space-3));
+  border-bottom: var(--encounter-header-divider, 1px solid var(--remed-border));
+}
+.page :global(.compartmentTitle) {
+  min-width: 0;
+  font-size: var(--remed-font-label);
+  font-weight: var(--remed-weight-strong);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.page:not(.clinicalCompartments) :global(.compartmentTitle) {
+  color: var(--remed-text) !important;
+}
+/* Reset legacy title gradients and compact-card colors for clinical pages. */
+.page.clinicalCardTitles :global(.compartment > .header > .compartmentTitle) {
+  color: inherit !important;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+.clinicalCardTitles :global(.compartmentTitleWithIcon) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--remed-space-2);
+  min-width: 0;
+}
+.clinicalCardTitles :global(.compartmentTitleIcon) {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--main-color);
+}
+.page :global(.compartment:not(.compact) .compartmentActions) {
+  display: flex;
+  align-items: center;
+  gap: var(--remed-space-1);
+}
+.page :global(.compartmentActions > div:empty) { display: none; }
+.page :global(.compartmentActions .btn) {
+  min-height: var(--encounter-action-size, 36px);
+  min-width: var(--encounter-action-size, 36px);
+  padding: var(--encounter-action-padding, var(--remed-space-2));
+  border-radius: var(--encounter-action-radius, var(--remed-radius-control));
+  font-size: var(--remed-font-small);
+  box-shadow: none;
+}
+.page.clinicalCompartments :global(.compartment > .header > .compartmentActions .btn) {
+  min-height: var(--encounter-action-size);
+  min-width: var(--encounter-action-size);
+  padding: var(--encounter-action-padding);
+  border-radius: var(--encounter-action-radius);
+}
+.page :global(.compartmentActions .btn.primary) {
+  background: var(--remed-button-primary-bg, var(--remed-selected-bg)) !important;
+  color: var(--remed-button-primary-text, var(--remed-selected-text)) !important;
+  border: 1px solid transparent;
+}
+.page :global(.compartmentActions .btn.primary):hover {
+  background: var(--remed-button-primary-hover-bg, var(--remed-button-primary-bg, var(--remed-selected-bg))) !important;
+  color: var(--remed-button-primary-hover-text, var(--remed-button-primary-text, var(--remed-selected-text))) !important;
+}
+.page :global(.compartmentActions .btn.primary:hover) {
+  background: var(--remed-button-primary-hover-bg, var(--remed-hover-bg)) !important;
+  border-color: var(--remed-button-primary-hover-border, var(--remed-primary));
+}
+.page :global(.compartmentSearch) { grid-column: 1 / -1; min-width: 0; }
+.page :global(.compartment > .content) { min-width: 0; }
+/* Let empty lists use the remaining card space, including below search controls
+ * and above footers such as the invoice total. */
+.page :global(.compartment:not(.compact) > .content:has(.listEmptyState)),
+.page :global(.compartment:not(.compact) > .content > .c1:has(> .listConstructor > .listEmptyState)),
+.page :global(.compartment:not(.compact) .listConstructor:has(> .listEmptyState)) {
+  display: flex;
+  flex-direction: column;
+}
+.page :global(.compartment:not(.compact) > .content > .c1:has(> .listConstructor > .listEmptyState)),
+.page :global(.compartment:not(.compact) .listConstructor:has(> .listEmptyState)) {
+  flex: 1;
+}
+.page :global(.compartment:not(.compact) .listEmptyState) {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  text-align: center;
+}
+.page :global(.compartment:not(.compact) .listEmptyState > *) {
+  margin: 0;
+  padding: 0 0 10px !important;
+}
+.page :global(.searchBar) {
+  min-width: 0;
+  border: 1px solid var(--remed-field-border, var(--remed-border));
+  border-radius: var(--remed-radius-control);
+  background: var(--remed-field-bg, var(--remed-surface-muted));
+  padding: var(--remed-space-2) var(--remed-space-3);
+  box-shadow: none;
+}
+.page :global(.searchBar input) { width: 100%; min-width: 0; background: transparent; }
+.page :global(.searchBar:focus-within) {
+  outline: none !important;
+  border-color: var(--remed-field-focus-border, var(--remed-primary));
+  box-shadow: var(--remed-focus-ring);
+}
+.notes {
+  padding: var(--remed-space-4);
+  border: 1px solid var(--remed-border);
+  border-radius: var(--remed-radius-card);
+  background: var(--remed-surface);
+  box-shadow: var(--remed-shadow-card);
+}
+.page :global(.field) { min-width: 0; }
+.page :global(.field .label) { color: var(--remed-text-muted); font-size: var(--remed-font-small); }
+.page :global(.field input:not([role="combobox"]):not([type="checkbox"]):not([type="radio"]):not([type="file"])),
+.page :global(.field textarea) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--remed-input-height);
+  padding: var(--remed-space-2) var(--remed-space-3);
+  border: 1px solid var(--remed-field-border, var(--remed-input-border));
+  border-radius: var(--remed-radius-control);
+  background: var(--remed-field-bg, var(--remed-surface));
+  color: var(--remed-field-text, var(--remed-text));
+  font-size: var(--remed-font-body);
+}
+.page :global(.field textarea) { min-height: 120px; resize: vertical; }
+.page :global(.field input:not([role="combobox"]):focus), .page :global(.field textarea:focus) {
+  outline: none !important;
+  border-color: var(--remed-field-focus-border, var(--remed-primary));
+  box-shadow: var(--remed-focus-ring);
+}
+.page :global(.field input:disabled), .page :global(.field textarea:disabled) {
+  background: var(--remed-field-disabled-bg, var(--remed-disabled-bg));
+  color: var(--remed-field-disabled-text, var(--remed-text-muted));
+}
+.page :global(.field.errorField input), .page :global(.field.errorField textarea),
+.page :global(.field input[aria-invalid="true"]), .page :global(.field textarea[aria-invalid="true"]) {
+  border-color: var(--remed-danger);
+  box-shadow: var(--remed-error-ring);
+}
+
+/* Keep compact mode's existing title/content/actions arrangement. */
+.page .hospitalGrid:global(.compact) {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--remed-space-3) !important;
+}
+.page :global(.compartment.compact) {
+  padding: var(--remed-space-3) var(--remed-space-4) !important;
+  box-shadow: var(--remed-shadow-card) !important;
+  gap: var(--remed-space-3);
+}
+.page :global(.hospitalisationDisplayModeSwitch) {
+  margin: 0;
+  min-height: var(--remed-control-height);
+  padding: var(--remed-space-2) var(--remed-space-3);
+  border: 1px solid var(--remed-border);
+  border-radius: var(--remed-radius-pill);
+  background: var(--remed-surface);
+  color: var(--remed-text-muted);
+  font-size: var(--remed-font-small);
+  gap: var(--remed-space-2);
+}
+.page :global(.hospitalisationDisplayModeSwitch > span.active) { color: var(--remed-selected-text); }
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--remed-space-2);
+  padding: var(--remed-space-2);
+  border: 1px solid var(--remed-border);
+  border-radius: var(--remed-radius-card);
+  background: var(--remed-surface);
+}
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 160px;
+  gap: var(--remed-space-2);
+  min-height: var(--remed-control-height);
+  padding: var(--remed-space-3) var(--remed-space-4);
+  border: 1px solid var(--remed-tab-border, transparent);
+  border-radius: var(--remed-radius-control);
+  background: var(--remed-tab-bg, transparent);
+  color: var(--remed-tab-text, var(--remed-text-muted));
+  font: inherit;
+  font-weight: var(--remed-weight-strong);
+  cursor: pointer;
+  transition: background var(--remed-transition), color var(--remed-transition);
+}
+.tab:hover { background: var(--remed-tab-hover-bg, var(--remed-hover-bg)); color: var(--remed-tab-hover-text, var(--remed-text)); }
+.tab[aria-pressed="true"] { background: var(--remed-tab-selected-bg, var(--remed-selected-bg)); color: var(--remed-tab-selected-text, var(--remed-selected-text)); }
+.tab svg { flex-shrink: 0; }
+.protocolName {
+  padding: var(--remed-space-3);
+  border-radius: var(--remed-radius-control);
+  background: var(--remed-selected-bg);
+  color: var(--remed-selected-text);
+  font-weight: var(--remed-weight-strong);
+  overflow-wrap: anywhere;
+}
+
+/* Only the drawer hosting one of these pages opts in; child form drawers do not. */
+:global(.drawer):has(> :global(.drawer-body) .page) {
+  background: var(--remed-dialog-bg, var(--remed-page-bg));
+  box-shadow: var(--remed-shadow-drawer);
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-body) {
+  padding: 0;
+  background: var(--remed-dialog-body-bg, var(--remed-page-bg));
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header) {
+  background: var(--remed-dialog-header-bg, var(--remed-surface));
+  color: var(--remed-dialog-text, var(--remed-text));
+  padding: var(--remed-space-4) var(--remed-space-6);
+  box-shadow: none;
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer) {
+  background: var(--remed-dialog-footer-bg, var(--remed-surface));
+  color: var(--remed-dialog-text, var(--remed-text));
+  padding: var(--remed-space-4) var(--remed-space-6);
+  box-shadow: none;
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header) {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--remed-space-3);
+  border-bottom: 1px solid var(--remed-dialog-border, var(--remed-border));
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header > .drawer-trailing) {
+  display: flex !important;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--remed-space-2);
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer) { border-top: 1px solid var(--remed-dialog-border, var(--remed-border)); }
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header .drawer-title) {
+  min-width: 0;
+  font-size: var(--remed-font-label);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header .back-button) {
+  display: grid;
+  place-items: center;
+  width: var(--remed-control-height);
+  height: var(--remed-control-height);
+  padding: 0;
+  border-radius: var(--remed-radius-control);
+  background: var(--remed-button-ghost-bg, rgba(0, 0, 0, 0.06));
+  color: var(--remed-button-ghost-text, var(--remed-text-muted));
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header .back-button):hover {
+  background: var(--remed-button-ghost-hover-bg, var(--remed-button-ghost-bg, rgba(0, 0, 0, 0.1)));
+  color: var(--remed-button-ghost-hover-text, var(--remed-button-ghost-text, var(--remed-text-muted)));
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header .back-button:hover) {
+  background: var(--remed-button-ghost-hover-bg, var(--remed-button-ghost-bg, rgba(0, 0, 0, 0.1)));
+  color: var(--remed-button-ghost-hover-text, var(--remed-selected-text));
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer .btn) {
+  min-height: var(--remed-control-height);
+  border-radius: var(--remed-radius-control);
+  font-size: var(--remed-font-body);
+  font-weight: var(--remed-weight-strong);
+  box-shadow: none;
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer .btn.blue-btn.primary) {
+  background: var(--remed-button-primary-bg, var(--remed-primary)) !important;
+  color: var(--remed-button-primary-text, var(--remed-on-primary)) !important;
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer .btn.blue-btn.primary):hover {
+  background: var(--remed-button-primary-hover-bg, var(--remed-button-primary-bg, var(--remed-primary))) !important;
+  color: var(--remed-button-primary-hover-text, var(--remed-button-primary-text, var(--remed-on-primary))) !important;
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer .btn.blue-btn.primary:hover) {
+  background: var(--remed-button-primary-hover-bg, var(--remed-primary-hover)) !important;
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer .btn.blue-btn.secondary) {
+  background: var(--remed-button-outline-bg, var(--remed-surface)) !important;
+  color: var(--remed-button-outline-text, var(--remed-selected-text)) !important;
+  border: 1px solid var(--remed-button-outline-border, var(--remed-border));
+}
+:global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer .btn.blue-btn.secondary):hover {
+  background: var(--remed-button-outline-hover-bg, var(--remed-button-outline-bg, var(--remed-surface))) !important;
+  color: var(--remed-button-outline-hover-text, var(--remed-button-outline-text, var(--remed-selected-text))) !important;
+}
+
+@container remed-encounter (max-width: 1320px) {
+  .clinicalCompartments .grid, .hospitalGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container remed-encounter (max-width: 1000px) {
+  .grid, .clinicalCompartments .grid, .hospitalGrid, .treatmentGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .treatmentGrid > :first-child { grid-column: 1 / -1; }
+}
+@container remed-encounter (max-width: 640px) {
+  .hospitalTreatment { grid-column: auto; }
+  .hospitalGrid:global(.c4) { grid-template-columns: minmax(0, 1fr); }
+  .grid, .clinicalCompartments .grid, .hospitalGrid, .treatmentGrid { grid-template-columns: minmax(0, 1fr); }
+  .wide { grid-column: auto; }
+  .heading h2 { font-size: var(--remed-font-heading); }
+  .page :global(.compartment.compact) { grid-template-columns: minmax(0, 1fr) auto; }
+  .page :global(.compartment.compact > .header > .compartmentActions) { grid-column: 2; }
+  .page :global(.compartment.compact > .content) { grid-column: 1 / -1; grid-row: 2; }
+}
+@media screen and (min-width: 80px) and (max-width: 801px), screen and (orientation: portrait) {
+  .hospitalTreatment { grid-column: auto; }
+  .hospitalGrid:global(.mc1) { grid-template-columns: minmax(0, 1fr); }
+  .hospitalGrid:global(.mc1) > .wide { grid-column: auto; }
+}
+@media (max-width: 800px) {
+  :global(.drawer-header):has(.hospitalTitle) > :global(.drawer-trailing .onboarding-help) {
+    display: none;
+  }
+  .hospitalTitle { row-gap: 4px; }
+  .hospitalPatientName {
+    font-size: var(--remed-font-label);
+    line-height: 1.3;
+  }
+  .hospitalPatientDetails {
+    font-size: var(--remed-font-small);
+    line-height: 1.3;
+  }
+  .clinicalCompartments { --encounter-action-size: var(--remed-control-height); }
+  .page { padding: var(--remed-space-4); }
+  :global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-header) { padding: var(--remed-space-3) var(--remed-space-4); }
+    :global(.drawer):has(> :global(.drawer-body) .page) > :global(.drawer-footer) { padding: var(--remed-space-3) var(--remed-space-4); }
+  .page :global(.compartmentActions .btn) { min-height: var(--remed-control-height); min-width: var(--remed-control-height); }
+  .page :global(.field input:not([role="combobox"])), .page :global(.field textarea) { font-size: var(--remed-font-input-mobile); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page :global(.staggered) { animation: none !important; opacity: 1; transform: none; }
+  .tab { transition: none; }
+}
