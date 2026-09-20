@@ -5,13 +5,14 @@ Independent static landing project. No source imports, build steps, or running s
 ```sh
 bun install
 bun run build       # dist/index.html and dist/landing/*
+bun run start       # serve the existing build at http://localhost:3001/home
 bun run dev         # standalone server: http://localhost:3001/home (also /)
 bun run studio      # Remotion compositions
 bun run test
-bun run typecheck:ts7
+bun run check
 ```
 
-`dev` rebuilds when sources or public assets change; refresh the page to see changes. The backend also defaults to port 3001. To run both, use `PORT=3002 bun run dev`.
+`start` serves the current `dist/` without rebuilding it. `dev` rebuilds when sources or public assets change; refresh the page to see changes. Both servers default to port 3001. Set `PORT=3002` to use another port.
 
 Edit `src/landing/home.template.html` for content, `src/landing/` for demos, and `public/landing/` for static assets. Local presentation components and theme tokens are independent snapshots; update them here when the landing design changes. Generated output lives only in `dist/` and `.landing-build/`.
 

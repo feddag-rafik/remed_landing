@@ -1195,7 +1195,7 @@ html {
 .cta-section {
   margin: 30px;
   border-radius: 20px;
-  background-image: url("/landing/assets/cta-doctor.png");
+  background-image: url("/landing/assets/cta-doctor.webp");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -2032,7 +2032,7 @@ body { color: #26364a; background: #fbfcfe; }
   margin: 0 auto 40px;
   padding: 30px;
   border-radius: 28px;
-  background-image: linear-gradient(120deg, rgb(21 48 68 / 12%), rgb(0 153 230 / 8%)), url("/landing/assets/cta-doctor.png");
+  background-image: linear-gradient(120deg, rgb(21 48 68 / 12%), rgb(0 153 230 / 8%)), url("/landing/assets/cta-doctor.webp");
   background-position: center;
   background-size: cover;
   background-attachment: scroll;

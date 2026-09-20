@@ -1,14 +1,15 @@
 {
   "name": "remed-landing",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0-pre",
   "type": "module",
   "scripts": {
     "build": "bun run scripts/build-landing.ts",
     "dev": "bun run scripts/dev-landing.ts",
+    "start": "bun run scripts/start-landing.ts",
     "studio": "remotion studio src/landing/studio.tsx",
     "test": "bun run build && bun run scripts/test-landing.ts",
-    "typecheck:ts7": "tsc --noEmit --skipLibCheck"
+    "check": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "@remotion/player": "4.0.516",
