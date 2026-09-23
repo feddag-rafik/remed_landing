@@ -1,5 +1,7 @@
 # Prerendered video prototype
 
+The current export target is **60 fps**. See [the current benchmark](VIDEO-BENCHMARK-60FPS.md) for desktop/mobile measurements with hidden video controls. The 30 fps measurements below remain a historical baseline.
+
 Throwaway branch `codex/prerendered-video-prototype`, based on the separate WebP hybrid experiment. Neither the original checkout nor the hybrid worktree is changed.
 
 Question: can build-time rendering replace browser-side React/Remotion animation, and what moves from CPU/DOM cost into video transfer and decoding?
@@ -19,7 +21,7 @@ Unsupported codecs fall back to the next supported source. A failed VP9/AV1 load
 
 The six static previews remain responsive WebP images. The four animated previews become native `video` elements when near the viewport. Their source URLs are not assigned in reduced-motion mode until the visitor opens a video manually. Posters remain visible through loading and return on an unrecoverable media error. Only one video plays at a time. Visibility, overlays, user pause, completion and responsive source changes use the existing framework-free playback coordinator.
 
-The picker is a native `dialog`, with native media controls for seeking, keyboard access and fullscreen. It defaults to the document demo without autoplay. Closing it releases its video source and restores focus. Inline controls provide pause and replay; hero controls appear on hover/focus. State and selected codec are exposed on each host as `data-state` and `data-codec`.
+The picker is a native `dialog`, with separate Play/Pause and Replay buttons below the video. Native video controls and inline overlay controls are hidden, including on hover. It defaults to the document demo without autoplay. Closing it releases its video source and restores focus. State and selected codec are exposed on each host as `data-state` and `data-codec`. Inline playback has no manual pause/retry control; reduced-motion preferences, visibility and overlays still suspend automatic playback.
 
 The landing build bundles only `video-bootstrap.ts`, demo metadata and the pure playback coordinator. A build guard rejects any React/ReactDOM/Remotion dependency in the browser graph. The component/player stylesheet is not shipped. The old React player source remains in the repository as reference, not as a browser dependency.
 
@@ -27,17 +29,38 @@ The landing build bundles only `video-bootstrap.ts`, demo metadata and the pure 
 
 Run `bun run render:videos` to render missing assets. It needs Chrome, FFmpeg with libvpx-vp9/libx264/libsvtav1, and the existing Remotion build dependencies. Set `CHROME_PATH` for nonstandard Chrome locations. The default path is the macOS Chrome application.
 
-The renderer produces lossless PNG sequences once per composition/aspect, then encodes each codec from those same frames. All videos use 30 fps. The hero's original 60 fps timeline is sampled every two frames, retaining its end state at a duration of 15.633 seconds. The other durations remain 35, 24 and 20 seconds. Desktop dimensions are 1100×820 for the hero and 1000×650 for the demos; compact dimensions are 740×820 and 740×650.
+The renderer produces lossless PNG sequences once per composition/aspect, then encodes each codec from those same frames. All videos use 60 fps. The hero uses its original 937-frame timeline, lasting 15.617 seconds. The other demos sample their original 30 fps animation curves at half-frame intervals, preserving durations of 35, 24 and 20 seconds. This renders intermediate animation states rather than duplicating frames. Integer-frame behavior remains the default outside the video exporter. Desktop dimensions are 1100×820 for the hero and 1000×650 for the demos; compact dimensions are 740×820 and 740×650.
 
 VP9 uses CRF 32, CPU-used 4, and alpha for the hero. H.264 uses CRF 23, medium preset and faststart. AV1 uses SVT-AV1 CRF 32, preset 8. Keyframes are at most two seconds apart. No audio track is included. The MP4 hero composites transparency over a pale `#eff6fb` matte; it does not look identical to the transparent hero.
 
 These CRF settings are not quality-equivalent across codecs. The asset table is an experiment, not a general claim that one codec compresses better. The defaults favor alpha for the hero and broadly compatible H.264 for opaque demos. H.264 was smaller than VP9 on the first opaque clips; AV1 was smallest on the voice clip. AV1 remains selectable for comparison; hardware decoding and battery cost need device testing.
 
-Rendered assets are a manual cache for this experiment. Set `RENDER_VIDEOS_AGAIN=1` after changing a composition. `VIDEO_ONLY=document` limits rendering to a demo, and `REUSE_VIDEO_FRAMES=1 RENDER_VIDEOS_AGAIN=1` re-encodes the existing frames. Only reuse frames when the composition itself is unchanged. PNG intermediates stay under ignored `.landing-build/video-frames`.
+Rendered assets are a manual cache for this experiment, with an FPS check preventing reuse of the earlier 30 fps manifest entries. Set `RENDER_VIDEOS_AGAIN=1` after changing a composition. `VIDEO_ONLY=document` limits rendering to a demo, and `REUSE_VIDEO_FRAMES=1 RENDER_VIDEOS_AGAIN=1` re-encodes the existing frames. Only reuse frames when the composition itself is unchanged. New PNG intermediates stay under ignored `.landing-build/video-frames-60fps`, separate from the earlier 30 fps frames. The encoder uses a 120-frame GOP to retain the two-second keyframe interval.
 
-## Encoded assets
+## Current 60 fps encoded assets
 
-Whole-file sizes in decimal MB, from the checked-in manifest. These are not initial network-transfer measurements or quality-matched codec scores.
+All 22 variants report `60/1` average frame rate in FFprobe, with expected dimensions and durations. Both hero WebMs retain alpha metadata. Whole-file sizes in decimal MB:
+
+| Clip | VP9/WebM | H.264/MP4 | AV1/WebM |
+|---|---:|---:|---:|
+| hero-desktop | 1.48 | 0.94 | Not encoded: alpha |
+| hero-compact | 1.20 | 0.81 | Not encoded: alpha |
+| document-desktop | 5.40 | 3.18 | 4.46 |
+| document-compact | 4.94 | 2.96 | 4.11 |
+| voice-desktop | 0.92 | 0.75 | 0.86 |
+| voice-compact | 0.84 | 0.71 | 0.83 |
+| assistant-desktop | 0.62 | 0.55 | 0.54 |
+| assistant-compact | 0.59 | 0.54 | 0.54 |
+
+Using the default transparent VP9 hero and H.264 demos, desktop totals **5.95 MB (+3.3%)** versus 5.76 MB at 30 fps; compact totals **5.41 MB (+7.9%)** versus 5.02 MB. These totals cover all four complete clips, not initial transfer. Codec settings and two-second keyframe spacing are unchanged; constant-quality output size does not scale directly with frame count. Earlier hashed files remain available for comparison but are no longer referenced by the manifest.
+
+The browser JavaScript remains 9,009 bytes. The current benchmark is recorded separately in [VIDEO-BENCHMARK-60FPS.md](VIDEO-BENCHMARK-60FPS.md); the historical trace below does not describe current decoding cost or smoothness.
+
+Chrome DevTools MCP checks on the new assets covered desktop/mobile, normal/reduced motion, all nine opaque codec/demo combinations, seeking, responsive source switching, and failed-WebM recovery to H.264. Before hiding controls, normal-motion hero samples reported 16 dropped frames out of 378 on desktop and 1 out of 379 in mobile emulation. These isolated headless samples are functional checks, not a controlled smoothness benchmark or real-mobile results. Reduced-motion scrolling created no videos; normal playback retained 523 elements and 9,009 bytes of browser JavaScript. A subsequent browser check confirmed hidden native/inline controls and visible separate dialog buttons.
+
+## Earlier 30 fps encoded assets
+
+Whole-file sizes in decimal MB from the earlier 30 fps manifest at commit `cdcea3a`. These are not initial network-transfer measurements or quality-matched codec scores.
 
 | Clip | VP9/WebM | H.264/MP4 | AV1/WebM |
 |---|---:|---:|---:|
@@ -52,9 +75,9 @@ Whole-file sizes in decimal MB, from the checked-in manifest. These are not init
 
 The default desktop set totals 5.76 MB across all four full videos, versus a shared animated JavaScript runtime of about 1.13 MB in the hybrid. The compact set totals 5.02 MB. Visitors only request clips when activated; seeking and browser buffering affect actual transferred bytes.
 
-## Desktop measurements
+## Earlier 30 fps desktop measurements
 
-Three cold normal-motion desktop runs, 1440×900 DPR 1, native CPU, local uncompressed server. Same six-second trace window as the prior benchmark, collected later rather than as interleaved A/B trials. The hero now runs at 30 fps rather than 60 fps, so workload is not identical.
+Three cold normal-motion desktop runs, 1440×900 DPR 1, native CPU, local uncompressed server. Same six-second trace window as the prior benchmark, collected later rather than as interleaved A/B trials. In these historical runs the native hero ran at 30 fps rather than the hybrid's 60 fps, so workload was not identical.
 
 | Metric | WebP hybrid | Native video |
 |---|---:|---:|
@@ -80,7 +103,7 @@ The full traces and comparison are saved with the task's `remed-video-performanc
 - An intentionally failed WebM request recovered to H.264 and resumed playback. Closing the dialog released it and restored trigger focus.
 - Normal playback has 523 document elements; all four mounted clips have 529. The hybrid had about 957 and 1,637 respectively. These counts exclude browser-native control internals.
 - The server returns HTTP 206 and `Accept-Ranges: bytes` for media range requests.
-- All 58 existing tests pass after updating the browser-entry filename expectation. The new native runtime was checked in-browser, not covered by new automated unit tests.
+- All 59 tests pass, including a regression test for opt-in fractional animation sampling and unchanged integer-frame defaults. The native runtime is checked in-browser, not covered by new automated unit tests.
 - Type checking still reports the four inherited React-ref errors in the unused `players.tsx` reference implementation. No new type errors were introduced.
 
 ## Limits

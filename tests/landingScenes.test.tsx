@@ -51,6 +51,16 @@ describe('landing demo contract and pure SSR', () => {
     }
   });
 
+  test('video exports can sample between frames without changing default previews', () => {
+    const fractional = (frame: number) => renderToStaticMarkup(<ProductPreview kind="document" frame={frame} allowFractionalFrames />);
+    expect(render('document', 340.5)).toBe(render('document', 340));
+    expect(fractional(340)).toBe(render('document', 340));
+    expect(fractional(340.5)).not.toBe(fractional(340));
+    expect(fractional(340.5)).not.toBe(fractional(341));
+    expect(fractional(-0.5)).toBe(fractional(0));
+    expect(fractional(99999)).toBe(fractional(1049));
+  });
+
   test('navigation matches the actual permission labels', () => {
     const html = text(render('hero'));
     for (const title of ['Dossiers', 'Hospitalisations', "Salles d'attente", 'Examens', 'Agenda', 'Blocs', 'Planning bloc', 'Mon Profil', 'Déconnexion']) expect(html).toContain(title);

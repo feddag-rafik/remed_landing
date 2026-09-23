@@ -5,8 +5,7 @@
 .pv-controls button:focus-visible,.pv-dialog button:focus-visible { outline:3px solid var(--remed-primary); outline-offset:3px; }
 .pv-status { background:white; color:var(--remed-text); border-radius:8px; font:12px var(--remed-font-family); }
 .pv-status:not(:empty) { padding:8px; }
-[data-landing-demo="hero"] .pv-controls { bottom:0; right:0; opacity:0; transition:opacity .15s; }
-[data-landing-demo="hero"]:hover .pv-controls,[data-landing-demo="hero"]:focus-within .pv-controls,[data-landing-demo][data-state="error"] .pv-controls,[data-landing-demo][data-state="blocked"] .pv-controls { opacity:1; }
+[data-landing-demo] .pv-controls { display:none; }
 .pv-dialog { box-sizing:border-box; width:min(1100px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); padding:24px; border:0; border-radius:24px; color:var(--remed-text); background:white; font-family:var(--remed-font-family); overflow:auto; }
 .pv-dialog::backdrop { background:rgb(38 54 74 / 65%); }
 .pv-dialog header { display:flex; align-items:start; justify-content:space-between; gap:20px; }

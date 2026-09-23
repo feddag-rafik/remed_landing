@@ -19,7 +19,7 @@ function mount(host:HTMLElement,id:DemoId,automatic:boolean){
   const video=document.createElement('video');
   video.className='pv-video';video.muted=true;video.defaultMuted=true;video.playsInline=true;video.preload='auto';
   video.setAttribute('aria-label',id==='hero'?'Démonstration du dossier patient':demos.find(d=>d.id===id)!.title);
-  video.controls=!automatic;
+  video.controls=false;
   const controls=document.createElement('div');controls.className='pv-controls';
   const button=document.createElement('button');button.type='button';button.textContent='Lire';
   const replay=document.createElement('button');replay.type='button';replay.textContent='Rejouer';

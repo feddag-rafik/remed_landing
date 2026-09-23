@@ -18,9 +18,9 @@ async function encode(args:string[]){const p=Bun.spawn(['ffmpeg','-hide_banner',
 for(const demo of compositions)for(const compact of [false,true]){
   const id=`${demo.id}-${compact?'compact':'desktop'}`;
   if(process.env.VIDEO_ONLY && !id.includes(process.env.VIDEO_ONLY))continue;
-  if(manifest[id]&&!process.env.RENDER_VIDEOS_AGAIN){console.log(`Cached ${id}`);continue;}
+  if(manifest[id]?.fps===60&&!process.env.RENDER_VIDEOS_AGAIN){console.log(`Cached ${id}`);continue;}
   const composition=await selectComposition({serveUrl,id,browserExecutable});
-  const frames=resolve('.landing-build/video-frames',id);
+  const frames=resolve('.landing-build/video-frames-60fps',id);
   await mkdir(frames,{recursive:true});
   if(!process.env.REUSE_VIDEO_FRAMES){
     await renderFrames({serveUrl,composition,browserExecutable,outputDir:frames,imageFormat:'png',inputProps:composition.props,concurrency:2,
@@ -29,7 +29,7 @@ for(const demo of compositions)for(const compact of [false,true]){
   }
   const names=(await readdir(frames)).filter(n=>n.endsWith('.png')).sort();
   const digits=names[0]!.match(/(\d+)\.png$/)![1]!.length;
-  const input=['-framerate','30','-i',resolve(frames,`element-%0${digits}d.png`),'-frames:v',String(composition.durationInFrames),'-an','-threads','2'];
+  const input=['-framerate',String(composition.fps),'-i',resolve(frames,`element-%0${digits}d.png`),'-frames:v',String(composition.durationInFrames),'-an','-threads','2'];
   const variants:Record<string,any>={};
   for(const codec of ['vp9','h264',...(demo.id==='hero'?[]:['av1'])]){
     const extension=codec==='h264'?'mp4':'webm';
@@ -39,16 +39,16 @@ for(const demo of compositions)for(const compact of [false,true]){
       codec==='av1'?['-c:v','libsvtav1','-crf','32','-preset','8','-svtav1-params','lp=2','-pix_fmt','yuv420p']:
       ['-c:v','libx264','-crf','23','-preset','medium','-pix_fmt','yuv420p','-movflags','+faststart'];
     // Alpha cannot survive H.264. A pale matte is an explicit fallback tradeoff.
-    const matte=demo.id==='hero'&&codec==='h264'?['-filter_complex',`color=c=0xeff6fb:s=${composition.width}x${composition.height}:r=30[bg];[bg][0:v]overlay=shortest=1:format=auto`]:[];
+    const matte=demo.id==='hero'&&codec==='h264'?['-filter_complex',`color=c=0xeff6fb:s=${composition.width}x${composition.height}:r=${composition.fps}[bg];[bg][0:v]overlay=shortest=1:format=auto`]:[];
     console.log(`Encoding ${id} ${codec}`);
-    await encode([...input,...matte,...options,'-g','60',temporary]);
+    await encode([...input,...matte,...options,'-g',String(composition.fps*2),temporary]);
     const bytes=await readFile(temporary);
     const hash=createHash('sha256').update(bytes).digest('hex').slice(0,12);
     const filename=`${id}-${codec}-${hash}.${extension}`;
     await writeFile(resolve(output,filename),bytes);
     variants[codec]={src:`/landing/prototype-videos/${filename}`,bytes:bytes.length,encodeSeconds:Math.round((performance.now()-start)/100)/10};
   }
-  manifest[id]={width:composition.width,height:composition.height,fps:30,duration:composition.durationInFrames/30,alpha:demo.id==='hero',variants};
+  manifest[id]={width:composition.width,height:composition.height,fps:composition.fps,duration:composition.durationInFrames/composition.fps,alpha:demo.id==='hero',variants};
   await writeFile(resolve(output,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
   console.log(`Finished ${id}: ${JSON.stringify(variants)}`);
 }

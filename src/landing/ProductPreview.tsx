@@ -25,6 +25,8 @@ export interface ProductPreviewProps {
   kind: ProductPreviewKind;
   frame?: number;
   compact?: boolean;
+  /** Build-time high-frame-rate exports may sample between source frames. */
+  allowFractionalFrames?: boolean;
 }
 
 // Fictional fixtures only. This module deliberately imports no clinical runtime.
@@ -336,10 +338,10 @@ function ImagingPreview() {
  * exactly like Remotion. Compact crops x=260…1000, y=0…650 (740 × 650).
  * The host owns theme tokens and Inter; no application stylesheet is imported.
  */
-export function ProductPreview({ kind, frame, compact = false }: ProductPreviewProps) {
+export function ProductPreview({ kind, frame, compact = false, allowFractionalFrames = false }: ProductPreviewProps) {
   const definition = compositions.find(demo => demo.id === kind);
   const requestedFrame = frame ?? definition?.posterFrame ?? 0;
-  const safeFrame = Number.isFinite(requestedFrame) ? Math.max(0, Math.min(definition ? definition.durationInFrames - 1 : 0, Math.floor(requestedFrame))) : 0;
+  const safeFrame = Number.isFinite(requestedFrame) ? Math.max(0, Math.min(definition ? definition.durationInFrames - 1 : 0, allowFractionalFrames ? requestedFrame : Math.floor(requestedFrame))) : 0;
   let content: ReactNode;
   switch (kind) {
     case 'document': content = <DocumentDemo frame={safeFrame} />; break;

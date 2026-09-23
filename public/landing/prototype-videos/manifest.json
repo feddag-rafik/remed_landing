@@ -2,182 +2,182 @@
   "hero-desktop": {
     "width": 1100,
     "height": 820,
-    "fps": 30,
-    "duration": 15.633333333333333,
+    "fps": 60,
+    "duration": 15.616666666666667,
     "alpha": true,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/hero-desktop-vp9-659946a176e2.webm",
-        "bytes": 1373849,
-        "encodeSeconds": 18.8
+        "src": "/landing/prototype-videos/hero-desktop-vp9-697f353740df.webm",
+        "bytes": 1475022,
+        "encodeSeconds": 36.4
       },
       "h264": {
-        "src": "/landing/prototype-videos/hero-desktop-h264-8ea34ebd0a9c.mp4",
-        "bytes": 1165199,
-        "encodeSeconds": 2.8
+        "src": "/landing/prototype-videos/hero-desktop-h264-95ed409a915d.mp4",
+        "bytes": 940531,
+        "encodeSeconds": 4.3
       }
     }
   },
   "hero-compact": {
     "width": 740,
     "height": 820,
-    "fps": 30,
-    "duration": 15.633333333333333,
+    "fps": 60,
+    "duration": 15.616666666666667,
     "alpha": true,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/hero-compact-vp9-3c75495926d4.webm",
-        "bytes": 966197,
-        "encodeSeconds": 13.6
+        "src": "/landing/prototype-videos/hero-compact-vp9-d407b6e7b86b.webm",
+        "bytes": 1201171,
+        "encodeSeconds": 26.5
       },
       "h264": {
-        "src": "/landing/prototype-videos/hero-compact-h264-836c1de4da5b.mp4",
-        "bytes": 771794,
-        "encodeSeconds": 1.7
+        "src": "/landing/prototype-videos/hero-compact-h264-051dfdc177d7.mp4",
+        "bytes": 812381,
+        "encodeSeconds": 3
       }
     }
   },
   "document-desktop": {
     "width": 1000,
     "height": 650,
-    "fps": 30,
+    "fps": 60,
     "duration": 35,
     "alpha": false,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/document-desktop-vp9-cdc12e317978.webm",
-        "bytes": 3846135,
-        "encodeSeconds": 17.5
+        "src": "/landing/prototype-videos/document-desktop-vp9-48c8d8b2ba17.webm",
+        "bytes": 5403790,
+        "encodeSeconds": 33.5
       },
       "h264": {
-        "src": "/landing/prototype-videos/document-desktop-h264-d30a675a4918.mp4",
-        "bytes": 2962511,
-        "encodeSeconds": 4.3
+        "src": "/landing/prototype-videos/document-desktop-h264-bbdb003f51b2.mp4",
+        "bytes": 3175364,
+        "encodeSeconds": 6.3
       },
       "av1": {
-        "src": "/landing/prototype-videos/document-desktop-av1-d3ad09f4cf3b.webm",
-        "bytes": 3138337,
-        "encodeSeconds": 9.2
+        "src": "/landing/prototype-videos/document-desktop-av1-359190c234e8.webm",
+        "bytes": 4455934,
+        "encodeSeconds": 12.3
       }
     }
   },
   "document-compact": {
     "width": 740,
     "height": 650,
-    "fps": 30,
+    "fps": 60,
     "duration": 35,
     "alpha": false,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/document-compact-vp9-849fc3872050.webm",
-        "bytes": 3485356,
-        "encodeSeconds": 17.5
+        "src": "/landing/prototype-videos/document-compact-vp9-788bc404775c.webm",
+        "bytes": 4944197,
+        "encodeSeconds": 29.9
       },
       "h264": {
-        "src": "/landing/prototype-videos/document-compact-h264-1e907337cebe.mp4",
-        "bytes": 2761988,
-        "encodeSeconds": 3.7
+        "src": "/landing/prototype-videos/document-compact-h264-7de9a0f987fd.mp4",
+        "bytes": 2960482,
+        "encodeSeconds": 5.1
       },
       "av1": {
-        "src": "/landing/prototype-videos/document-compact-av1-59b42901999c.webm",
-        "bytes": 2916025,
-        "encodeSeconds": 5.9
+        "src": "/landing/prototype-videos/document-compact-av1-defdd1771f2b.webm",
+        "bytes": 4105812,
+        "encodeSeconds": 10.7
       }
     }
   },
   "voice-desktop": {
     "width": 1000,
     "height": 650,
-    "fps": 30,
+    "fps": 60,
     "duration": 24,
     "alpha": false,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/voice-desktop-vp9-2ba7f7cf0eb7.webm",
-        "bytes": 830613,
-        "encodeSeconds": 15.3
+        "src": "/landing/prototype-videos/voice-desktop-vp9-40ba2accbe07.webm",
+        "bytes": 918216,
+        "encodeSeconds": 30.8
       },
       "h264": {
-        "src": "/landing/prototype-videos/voice-desktop-h264-ce59950769ce.mp4",
-        "bytes": 779360,
-        "encodeSeconds": 1.9
+        "src": "/landing/prototype-videos/voice-desktop-h264-1b064281e308.mp4",
+        "bytes": 748215,
+        "encodeSeconds": 3.3
       },
       "av1": {
-        "src": "/landing/prototype-videos/voice-desktop-av1-3fbde3146e6f.webm",
-        "bytes": 747003,
-        "encodeSeconds": 4
+        "src": "/landing/prototype-videos/voice-desktop-av1-d5684d950bb2.webm",
+        "bytes": 864902,
+        "encodeSeconds": 7.4
       }
     }
   },
   "voice-compact": {
     "width": 740,
     "height": 650,
-    "fps": 30,
+    "fps": 60,
     "duration": 24,
     "alpha": false,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/voice-compact-vp9-68acd1b902c4.webm",
-        "bytes": 759453,
-        "encodeSeconds": 12.5
+        "src": "/landing/prototype-videos/voice-compact-vp9-e33b116dce84.webm",
+        "bytes": 843752,
+        "encodeSeconds": 23.9
       },
       "h264": {
-        "src": "/landing/prototype-videos/voice-compact-h264-dd76662df853.mp4",
-        "bytes": 736676,
-        "encodeSeconds": 1.3
+        "src": "/landing/prototype-videos/voice-compact-h264-bdc97ccc90e1.mp4",
+        "bytes": 714538,
+        "encodeSeconds": 2.4
       },
       "av1": {
-        "src": "/landing/prototype-videos/voice-compact-av1-ecac6a77fd20.webm",
-        "bytes": 700319,
-        "encodeSeconds": 3.4
+        "src": "/landing/prototype-videos/voice-compact-av1-315bafd76d4e.webm",
+        "bytes": 831129,
+        "encodeSeconds": 5.8
       }
     }
   },
   "assistant-desktop": {
     "width": 1000,
     "height": 650,
-    "fps": 30,
+    "fps": 60,
     "duration": 20,
     "alpha": false,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/assistant-desktop-vp9-e716c268be0e.webm",
-        "bytes": 703008,
-        "encodeSeconds": 12.3
+        "src": "/landing/prototype-videos/assistant-desktop-vp9-fe6ad43cee95.webm",
+        "bytes": 623357,
+        "encodeSeconds": 23
       },
       "h264": {
-        "src": "/landing/prototype-videos/assistant-desktop-h264-2ac332aaaaf3.mp4",
-        "bytes": 640391,
-        "encodeSeconds": 1.9
+        "src": "/landing/prototype-videos/assistant-desktop-h264-4752d00ebb33.mp4",
+        "bytes": 550010,
+        "encodeSeconds": 2.7
       },
       "av1": {
-        "src": "/landing/prototype-videos/assistant-desktop-av1-eab083f45abd.webm",
-        "bytes": 611655,
-        "encodeSeconds": 3.5
+        "src": "/landing/prototype-videos/assistant-desktop-av1-7afcdfe526af.webm",
+        "bytes": 539622,
+        "encodeSeconds": 5.6
       }
     }
   },
   "assistant-compact": {
     "width": 740,
     "height": 650,
-    "fps": 30,
+    "fps": 60,
     "duration": 20,
     "alpha": false,
     "variants": {
       "vp9": {
-        "src": "/landing/prototype-videos/assistant-compact-vp9-156df4d29299.webm",
-        "bytes": 567945,
-        "encodeSeconds": 10
+        "src": "/landing/prototype-videos/assistant-compact-vp9-15d244f24605.webm",
+        "bytes": 590913,
+        "encodeSeconds": 17.6
       },
       "h264": {
-        "src": "/landing/prototype-videos/assistant-compact-h264-03f81dc8d00f.mp4",
-        "bytes": 553270,
-        "encodeSeconds": 1.2
+        "src": "/landing/prototype-videos/assistant-compact-h264-ad52ba08cb78.mp4",
+        "bytes": 536781,
+        "encodeSeconds": 2
       },
       "av1": {
-        "src": "/landing/prototype-videos/assistant-compact-av1-6a8dbefbf5f1.webm",
-        "bytes": 500058,
-        "encodeSeconds": 2.8
+        "src": "/landing/prototype-videos/assistant-compact-av1-24ef5139698d.webm",
+        "bytes": 537066,
+        "encodeSeconds": 4.8
       }
     }
   }
