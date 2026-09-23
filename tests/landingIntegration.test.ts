@@ -39,7 +39,7 @@ test("the initial script stays lightweight and references only generated local a
   expect(document.querySelector('link[href^="/landing/landing-"]')).not.toBeNull();
   expect(document.querySelector('script[src^="/landing/landing-"]')).not.toBeNull();
   const src = document.querySelector<HTMLScriptElement>('script[type="module"]')!.getAttribute("src")!;
-  expect(src).toMatch(/^\/landing\/generated\/bootstrap-.*\.js$/);
+  expect(src).toMatch(/^\/landing\/generated\/video-bootstrap-.*\.js$/);
   const script = readFileSync(resolve(root,"dist",src.slice(1)), "utf8");
   expect(gzipSync(script).length).toBeLessThan(12_000);
   expect(script).not.toMatch(/SuperDoc|FullCalendar|apiFetch|createRoot|react-dom/);

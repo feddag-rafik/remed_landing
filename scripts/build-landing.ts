@@ -1,120 +1,49 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { resolve, basename } from "node:path";
-import { createHash } from "node:crypto";
-import { build, transform } from "esbuild";
-import { rasterPosters } from "./prototype-posters";
+import {cp,mkdir,readFile,writeFile} from 'node:fs/promises';
+import {resolve,basename} from 'node:path';
+import {createHash} from 'node:crypto';
+import {build,transform} from 'esbuild';
+import {compositions} from '../src/landing/demoData';
 
-const root = resolve(import.meta.dir, "..");
-process.chdir(root);
-const output = resolve(root, "dist/landing/generated");
-const landingOutput = resolve(root, "dist/landing");
-const temporary = resolve(root, ".landing-build");
-await mkdir(output, { recursive: true });
-await Promise.all([
-  rm(resolve(landingOutput, "landing.css"), { force: true }),
-  rm(resolve(landingOutput, "landing.js"), { force: true }),
-]);
-await cp(resolve(root, "public/landing"), landingOutput, {
-  recursive: true,
-  filter: source => !["landing.css", "landing.js"].includes(basename(source)),
+process.chdir(resolve(import.meta.dir,'..'));
+const output=resolve('dist/landing/generated');
+await mkdir(output,{recursive:true});
+const posters=JSON.parse(await readFile('public/landing/prototype-posters/manifest.json','utf8')).images as Record<string,string>;
+const videos=JSON.parse(await readFile('public/landing/prototype-videos/manifest.json','utf8'));
+for(const demo of compositions)for(const mode of ['desktop','compact']){
+  const asset=videos[`${demo.id}-${mode}`];
+  if(!asset)throw Error(`Missing ${demo.id}-${mode}. Run bun run render:videos`);
+  for(const variant of Object.values(asset.variants) as {src:string}[]){if(!await Bun.file('public'+variant.src).exists())throw Error(`Missing video: ${variant.src}`);}
+}
+await cp('public/landing','dist/landing',{recursive:true,filter:path=>!['landing.css','landing.js','generated'].includes(basename(path))});
+const page=await build({entryPoints:['public/landing/landing.css','public/landing/landing.js'],outdir:'dist/landing',bundle:true,minify:true,platform:'browser',target:'es2022',entryNames:'[name]-[hash]',external:['/landing/*'],metafile:true});
+const browser=await build({entryPoints:['src/landing/video-bootstrap.ts'],outdir:output,bundle:true,minify:true,format:'esm',platform:'browser',target:'es2022',entryNames:'[name]-[hash]',metafile:true});
+for(const path of Object.keys(browser.metafile.inputs))if(/node_modules\/(react|react-dom|remotion|@remotion)\//.test(path))throw Error(`Browser framework dependency: ${path}`);
+const theme=await readFile('src/styles/remed-theme.css','utf8');
+const tokens=theme.match(/:root\s*\{[\s\S]*?\n\}/)?.[0];
+if(!tokens)throw Error('Theme tokens missing');
+const css=(await transform([tokens,...await Promise.all(['src/landing/landingDemos.css','src/landing/prototype-posters.css','src/landing/video-prototype.css'].map(path=>readFile(path,'utf8')))].join('\n'),{loader:'css',minify:true})).code;
+const cssFile=`native-video-${createHash('sha256').update(css).digest('hex').slice(0,12)}.css`;
+await writeFile(resolve(output,cssFile),css);
+const staticEntries=Object.entries(page.metafile.outputs);
+const landingCss=staticEntries.find(([path])=>path.endsWith('.css'))![0];
+const landingJs=staticEntries.find(([path])=>path.endsWith('.js'))![0];
+const entry=Object.entries(browser.metafile.outputs).find(([path])=>path.endsWith('.js'))!;
+let html=await readFile('src/landing/home.template.html','utf8');
+const appUrl=process.env.LANDING_APP_URL?.trim();
+const login=appUrl?new URL('login',appUrl.replace(/\/?$/,'/')).href:'/login';
+if(appUrl&&!/^https?:\/\//.test(login))throw Error('LANDING_APP_URL must use HTTP or HTTPS');
+html=html.replaceAll('href="/login"',`href="${login.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;')}"`)
+  .replace('/landing/landing.css',`/landing/${basename(landingCss)}`).replace('/landing/landing.js',`/landing/${basename(landingJs)}`);
+const labels:Record<string,string>={hero:'Dossier patient sur ordinateur et mobile','patient-records':'Gestion des dossiers patients',prescriptions:'Ordonnance médicale',calendar:'Agenda du cabinet',accounting:'Comptabilité du cabinet','waiting-room':"Gestion des salles d’attente",'medical-imaging':'Consultation des examens médicaux',document:'Rédaction assistée du compte rendu',voice:'Transcription de la consultation',assistant:'Assistant IA dans le dossier patient'};
+html=html.replace(/<!-- landing-(preview|demo):([\w-]+) -->/g,(_,type,id)=>{
+  const width=id==='hero'?1100:1000,height=id==='hero'?820:650;
+  if(!posters[id+'-desktop'])throw Error(`Missing poster ${id}`);
+  return `<div class="ld-demo-slot" ${type==='demo'?`data-landing-demo="${id}"`:`data-product-preview="${id}"`}><picture class="ld-raster"><source media="(max-width:600px)" srcset="/landing/prototype-posters/${posters[id+'-compact']}" width="740" height="${height}"><img class="ld-raster-image" src="/landing/prototype-posters/${posters[id+'-desktop']}" width="${width}" height="${height}" loading="${id==='hero'?'eager':'lazy'}" decoding="async" ${id==='hero'?'fetchpriority="high" ':''}alt="${labels[id]} · données fictives"></picture></div>`;
 });
-await mkdir(temporary, { recursive: true });
-
-// Bun remains the runtime. Its 1.2 CSS splitting emits imports of .css instead
-// of the corresponding JS chunks; use esbuild for portable, correct ESM output.
-// Keep CSS identifiers stable between the independently compiled posters/player.
-const common = {
-  bundle: true,
-  format: "esm" as const,
-  minifySyntax: true,
-  minifyWhitespace: true,
-  minifyIdentifiers: false,
-  external: ["/landing/fonts/*"],
-  define: { "process.env.NODE_ENV": JSON.stringify("production") },
-};
-const staticAssets = await build({
-  entryPoints: ["public/landing/landing.css", "public/landing/landing.js"],
-  outdir: landingOutput,
-  bundle: true,
-  minify: true,
-  platform: "browser",
-  target: ["es2022"],
-  entryNames: "[name]-[hash]",
-  external: ["/landing/*"],
-  metafile: true,
-});
-const browser = await build({
-  ...common,
-  entryPoints: ["src/landing/bootstrap.ts"],
-  outdir: output,
-  platform: "browser",
-  target: ["es2022"],
-  splitting: true,
-  entryNames: "[name]-[hash]",
-  chunkNames: "[name]-[hash]",
-  assetNames: "[name]-[hash]",
-  metafile: true,
-});
-await build({
-  ...common,
-  entryPoints: ["src/landing/renderPosters.tsx"],
-  outdir: temporary,
-  platform: "node",
-  target: "es2022",
-  external: [...common.external, "react", "react-dom/server"],
-});
-const { renderPosters } = await import(resolve(temporary, "renderPosters.js"));
-const posters: Record<string, string> = renderPosters();
-const appUrl = process.env.LANDING_APP_URL?.trim();
-const loginHref = appUrl ? new URL("login", appUrl.replace(/\/?$/, "/")).href : "/login";
-if (appUrl && !/^https?:\/\//.test(loginHref)) throw new Error("LANDING_APP_URL must use HTTP or HTTPS");
-const escapedLoginHref = loginHref.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-let html = await readFile("src/landing/home.template.html", "utf8");
-const staticOutputs = Object.entries(staticAssets.metafile.outputs);
-const landingCss = staticOutputs.find(([path, meta]) => meta.entryPoint === "public/landing/landing.css" && path.endsWith(".css"));
-const landingScript = staticOutputs.find(([path, meta]) => meta.entryPoint === "public/landing/landing.js" && path.endsWith(".js"));
-if (!landingCss || !landingScript) throw new Error("Optimized landing assets missing");
-html = html
-  .replace('/landing/landing.css', `/landing/${basename(landingCss[0])}`)
-  .replace('/landing/landing.js', `/landing/${basename(landingScript[0])}`);
-html = html.replaceAll('href="/login"', `href="${escapedLoginHref}"`);
-
-// Extract the single source of truth, without loading application global CSS.
-const theme = await readFile("src/styles/remed-theme.css", "utf8");
-const tokens = theme.match(/:root\s*\{[\s\S]*?\n\}/)?.[0];
-if (!tokens) throw new Error("Remed theme token block not found");
-const assets = Object.entries(browser.metafile.outputs);
-const compiledStyles = await Promise.all(assets.filter(([path]) => path.endsWith(".css")).map(([path]) => readFile(path, "utf8")));
-if (!compiledStyles.length) throw new Error("Landing component CSS missing");
-const css = [tokens, ...new Set(compiledStyles), await readFile("src/landing/landingDemos.css", "utf8"), await readFile("src/landing/players.css", "utf8")].join("\n");
-const cssFile = `landing-demos-${createHash("sha256").update(css).digest("hex").slice(0,12)}.css`;
-await writeFile(resolve(output, cssFile), css);
-const captureCss = css + '\n' + await readFile(landingCss[0], 'utf8');
-const images = await rasterPosters(posters, renderPosters(true), captureCss);
-await cp(resolve(root,'public/landing/prototype-posters'),resolve(landingOutput,'prototype-posters'),{recursive:true});
-const labels: Record<string,string> = {
-  hero: 'Aperçu du dossier patient REMED sur ordinateur et mobile',
-  'patient-records': 'Gestion des dossiers patients', prescriptions: 'Ordonnance médicale',
-  calendar: 'Agenda du cabinet', accounting: 'Comptabilité du cabinet',
-  'waiting-room': "Gestion des salles d’attente", 'medical-imaging': 'Consultation des examens médicaux',
-  document: 'Rédaction assistée du compte rendu', voice: 'Transcription de la consultation', assistant: 'Assistant IA dans le dossier patient',
-};
-html = html.replace(/<!-- landing-(preview|demo):([\w-]+) -->/g, (_match, type, id) => {
-  if (!posters[id]) throw new Error(`Missing landing poster: ${id}`);
-  const width=id==='hero'?1100:1000, height=id==='hero'?820:650;
-  return `<div class="ld-demo-slot" ${type === "demo" ? `data-landing-demo="${id}"` : `data-product-preview="${id}"`}><picture class="ld-raster"><source media="(max-width:600px)" srcset="/landing/prototype-posters/${images[id+'-compact']}" width="740" height="${height}"><img class="ld-raster-image" src="/landing/prototype-posters/${images[id+'-desktop']}" width="${width}" height="${height}" loading="${id==='hero'?'eager':'lazy'}" decoding="async" ${id==='hero'?'fetchpriority="high" ':''}alt="${labels[id]} · données fictives"></picture></div>`;
-});
-const initialCss = (await transform([tokens,await readFile('src/landing/landingDemos.css','utf8'),await readFile('src/landing/prototype-posters.css','utf8')].join('\n'),{loader:'css',minify:true})).code;
-const initialCssFile=`poster-shell-${createHash('sha256').update(initialCss).digest('hex').slice(0,12)}.css`;
-await writeFile(resolve(output,initialCssFile),initialCss);
-const entry = assets.find(([path, meta]) => meta.entryPoint === "src/landing/bootstrap.ts" && path.endsWith(".js"));
-if (!entry) throw new Error("Landing entry missing");
-html = html.replace("<!-- landing-styles -->", `<link rel="stylesheet" href="/landing/generated/${initialCssFile}"><meta name="landing-player-styles" content="/landing/generated/${cssFile}">`)
-  .replace("<!-- landing-script -->", `<script type="module" src="/landing/generated/${basename(entry[0])}"></script>`);
-if (/<!-- landing-(preview|demo|styles|script)/.test(html)) throw new Error("Unresolved landing template markers");
-await writeFile("dist/index.html", html.replace(/[\t ]+$/gm, ""));
-
-// Keep previous immutable hashes: already-open pages may only request their
-// deferred chunks after a rebuild. Artifact cleanup belongs to release retention.
-await writeFile(resolve(temporary, "bundle-report.json"), JSON.stringify(browser.metafile, null, 2));
-console.log(`Landing: 6 product previews, 1 desktop/mobile hero, 3 IA demos. Initial script: ${entry[1].bytes} bytes. ${assets.length} assets.`);
+html=html.replace('<!-- landing-styles -->',`<link rel="stylesheet" href="/landing/generated/${cssFile}">`)
+  .replace('<!-- landing-script -->',`<script id="video-manifest" type="application/json">${JSON.stringify(videos).replaceAll('<','\\u003c')}</script><script type="module" src="/landing/generated/${basename(entry[0])}"></script>`);
+if(/<!-- landing-(preview|demo|styles|script)/.test(html))throw Error('Unresolved template marker');
+await writeFile('dist/index.html',html.replace(/[\t ]+$/gm,''));
+await mkdir('.landing-build',{recursive:true});
+await writeFile('.landing-build/bundle-report.json',JSON.stringify(browser.metafile,null,2));
+console.log(`Native-video prototype: ${entry[1].bytes} bytes of player JS. No React/Remotion browser dependencies.`);

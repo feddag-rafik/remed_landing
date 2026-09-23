@@ -1,5 +1,7 @@
 # Hybrid WebP prototype
 
+Historical baseline inherited from the parent branch. This worktree now uses native video; see [VIDEO-PROTOTYPE.md](VIDEO-PROTOTYPE.md).
+
 Throwaway performance experiment on `codex/hybrid-webp-prototype`.
 
 Question: how much initial DOM and rendering work can raster posters remove while retaining viewport-triggered Remotion playback?

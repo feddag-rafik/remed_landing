@@ -1,5 +1,7 @@
 # Remed landing
 
+This branch is a native-video experiment. See [VIDEO-PROTOTYPE.md](VIDEO-PROTOTYPE.md). Run `bun run prototype` to preview on port 43126. React and Remotion remain build-time tools, but the browser bundle contains neither.
+
 Independent static landing project. No source imports, build steps, or running services from `remed_web` are required.
 
 ```sh

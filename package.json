@@ -4,6 +4,7 @@
   "version": "1.0.0-pre",
   "type": "module",
   "scripts": {
+    "render:videos": "bun run scripts/render-prototype-videos.ts",
     "prototype": "bun run scripts/prototype.ts",
     "build": "bun run scripts/build-landing.ts",
     "dev": "bun run scripts/dev-landing.ts",
