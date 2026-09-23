@@ -1,6 +1,18 @@
 // Landing entry: no application or authentication runtime.
 let runtime: Promise<typeof import("./players")> | undefined;
-const loadPlayers = () => runtime ||= import("./players").catch(error => {
+function loadPlayerStyles(): Promise<void> {
+  const url = document.querySelector<HTMLMetaElement>('meta[name="landing-player-styles"]')?.content;
+  if (!url) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = url;
+    link.onload = () => resolve();
+    link.onerror = () => { link.remove(); reject(new Error("Player styles failed to load")); };
+    document.head.append(link);
+  });
+}
+const loadPlayers = () => runtime ||= Promise.all([loadPlayerStyles(), import("./players")]).then(([, players]) => players).catch(error => {
   runtime = undefined;
   throw error;
 });
@@ -42,7 +54,7 @@ if ("IntersectionObserver" in window) {
         const id = element.dataset.landingDemo;
         if (id === "hero" || id === "document" || id === "voice" || id === "assistant") mountDemo(element, id);
       }).catch(() => {
-        // The complete coded poster remains visible; manual video links retry.
+        // The WebP poster remains visible; manual video links retry.
       });
     }
   }, { rootMargin: "160px 0px" });

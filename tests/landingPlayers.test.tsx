@@ -156,7 +156,7 @@ test("keeps the exact static poster through loading and restores it on idempoten
   expect(element.querySelector<HTMLElement>(".landing-player-mount")!.style.visibility).toBe("hidden");
   expect(element.querySelector(".landing-player-controls")).toBeNull();
   releaseFonts(); await flush(); await flush();
-  expect(element.querySelector<HTMLElement>(".landing-player-poster")!.hidden).toBe(true);
+  expect(element.querySelector(".landing-player-poster")).toBeNull();
   act(() => { cleanup(); cleanup(); });
   expect(element.firstChild).toBe(original);
   expect(Observer.instances.size).toBe(0);

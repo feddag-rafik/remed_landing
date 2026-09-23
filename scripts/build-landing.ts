@@ -1,14 +1,23 @@
-import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve, basename } from "node:path";
 import { createHash } from "node:crypto";
-import { build } from "esbuild";
+import { build, transform } from "esbuild";
+import { rasterPosters } from "./prototype-posters";
 
 const root = resolve(import.meta.dir, "..");
 process.chdir(root);
 const output = resolve(root, "dist/landing/generated");
+const landingOutput = resolve(root, "dist/landing");
 const temporary = resolve(root, ".landing-build");
 await mkdir(output, { recursive: true });
-await cp(resolve(root, "public/landing"), resolve(root, "dist/landing"), { recursive: true });
+await Promise.all([
+  rm(resolve(landingOutput, "landing.css"), { force: true }),
+  rm(resolve(landingOutput, "landing.js"), { force: true }),
+]);
+await cp(resolve(root, "public/landing"), landingOutput, {
+  recursive: true,
+  filter: source => !["landing.css", "landing.js"].includes(basename(source)),
+});
 await mkdir(temporary, { recursive: true });
 
 // Bun remains the runtime. Its 1.2 CSS splitting emits imports of .css instead
@@ -23,6 +32,17 @@ const common = {
   external: ["/landing/fonts/*"],
   define: { "process.env.NODE_ENV": JSON.stringify("production") },
 };
+const staticAssets = await build({
+  entryPoints: ["public/landing/landing.css", "public/landing/landing.js"],
+  outdir: landingOutput,
+  bundle: true,
+  minify: true,
+  platform: "browser",
+  target: ["es2022"],
+  entryNames: "[name]-[hash]",
+  external: ["/landing/*"],
+  metafile: true,
+});
 const browser = await build({
   ...common,
   entryPoints: ["src/landing/bootstrap.ts"],
@@ -50,11 +70,14 @@ const loginHref = appUrl ? new URL("login", appUrl.replace(/\/?$/, "/")).href : 
 if (appUrl && !/^https?:\/\//.test(loginHref)) throw new Error("LANDING_APP_URL must use HTTP or HTTPS");
 const escapedLoginHref = loginHref.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 let html = await readFile("src/landing/home.template.html", "utf8");
+const staticOutputs = Object.entries(staticAssets.metafile.outputs);
+const landingCss = staticOutputs.find(([path, meta]) => meta.entryPoint === "public/landing/landing.css" && path.endsWith(".css"));
+const landingScript = staticOutputs.find(([path, meta]) => meta.entryPoint === "public/landing/landing.js" && path.endsWith(".js"));
+if (!landingCss || !landingScript) throw new Error("Optimized landing assets missing");
+html = html
+  .replace('/landing/landing.css', `/landing/${basename(landingCss[0])}`)
+  .replace('/landing/landing.js', `/landing/${basename(landingScript[0])}`);
 html = html.replaceAll('href="/login"', `href="${escapedLoginHref}"`);
-html = html.replace(/<!-- landing-(preview|demo):([\w-]+) -->/g, (_match, type, id) => {
-  if (!posters[id]) throw new Error(`Missing landing poster: ${id}`);
-  return `<div class="ld-demo-slot" ${type === "demo" ? `data-landing-demo="${id}"` : `data-product-preview="${id}"`}>${posters[id]}</div>`;
-});
 
 // Extract the single source of truth, without loading application global CSS.
 const theme = await readFile("src/styles/remed-theme.css", "utf8");
@@ -66,9 +89,27 @@ if (!compiledStyles.length) throw new Error("Landing component CSS missing");
 const css = [tokens, ...new Set(compiledStyles), await readFile("src/landing/landingDemos.css", "utf8"), await readFile("src/landing/players.css", "utf8")].join("\n");
 const cssFile = `landing-demos-${createHash("sha256").update(css).digest("hex").slice(0,12)}.css`;
 await writeFile(resolve(output, cssFile), css);
+const captureCss = css + '\n' + await readFile(landingCss[0], 'utf8');
+const images = await rasterPosters(posters, renderPosters(true), captureCss);
+await cp(resolve(root,'public/landing/prototype-posters'),resolve(landingOutput,'prototype-posters'),{recursive:true});
+const labels: Record<string,string> = {
+  hero: 'Aperçu du dossier patient REMED sur ordinateur et mobile',
+  'patient-records': 'Gestion des dossiers patients', prescriptions: 'Ordonnance médicale',
+  calendar: 'Agenda du cabinet', accounting: 'Comptabilité du cabinet',
+  'waiting-room': "Gestion des salles d’attente", 'medical-imaging': 'Consultation des examens médicaux',
+  document: 'Rédaction assistée du compte rendu', voice: 'Transcription de la consultation', assistant: 'Assistant IA dans le dossier patient',
+};
+html = html.replace(/<!-- landing-(preview|demo):([\w-]+) -->/g, (_match, type, id) => {
+  if (!posters[id]) throw new Error(`Missing landing poster: ${id}`);
+  const width=id==='hero'?1100:1000, height=id==='hero'?820:650;
+  return `<div class="ld-demo-slot" ${type === "demo" ? `data-landing-demo="${id}"` : `data-product-preview="${id}"`}><picture class="ld-raster"><source media="(max-width:600px)" srcset="/landing/prototype-posters/${images[id+'-compact']}" width="740" height="${height}"><img class="ld-raster-image" src="/landing/prototype-posters/${images[id+'-desktop']}" width="${width}" height="${height}" loading="${id==='hero'?'eager':'lazy'}" decoding="async" ${id==='hero'?'fetchpriority="high" ':''}alt="${labels[id]} · données fictives"></picture></div>`;
+});
+const initialCss = (await transform([tokens,await readFile('src/landing/landingDemos.css','utf8'),await readFile('src/landing/prototype-posters.css','utf8')].join('\n'),{loader:'css',minify:true})).code;
+const initialCssFile=`poster-shell-${createHash('sha256').update(initialCss).digest('hex').slice(0,12)}.css`;
+await writeFile(resolve(output,initialCssFile),initialCss);
 const entry = assets.find(([path, meta]) => meta.entryPoint === "src/landing/bootstrap.ts" && path.endsWith(".js"));
 if (!entry) throw new Error("Landing entry missing");
-html = html.replace("<!-- landing-styles -->", `<link rel="stylesheet" href="/landing/generated/${cssFile}">`)
+html = html.replace("<!-- landing-styles -->", `<link rel="stylesheet" href="/landing/generated/${initialCssFile}"><meta name="landing-player-styles" content="/landing/generated/${cssFile}">`)
   .replace("<!-- landing-script -->", `<script type="module" src="/landing/generated/${basename(entry[0])}"></script>`);
 if (/<!-- landing-(preview|demo|styles|script)/.test(html)) throw new Error("Unresolved landing template markers");
 await writeFile("dist/index.html", html.replace(/[\t ]+$/gm, ""));

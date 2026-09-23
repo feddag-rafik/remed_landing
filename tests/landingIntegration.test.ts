@@ -12,12 +12,13 @@ test("the exported landing contains six previews, a desktop/mobile hero and thre
   expect(document.querySelectorAll("[data-product-preview]").length).toBe(6);
   expect(document.querySelectorAll("[data-landing-demo]").length).toBe(4);
   const hero = document.querySelector('#hero [data-landing-demo="hero"]')!;
-  expect(hero.querySelector('[data-record-antecedent="hypertension"]')).not.toBeNull();
-  expect(hero.querySelector('[data-record-antecedent="dyslipidemia"]')).not.toBeNull();
-  expect(hero.querySelector('[data-hero-section="drawer"]')).toBeNull();
-  expect([...hero.querySelectorAll('[data-mobile-motive]')].map(item => item.textContent)).toEqual(['Douleur thoracique', 'Asthénie']);
+  expect(hero.querySelector('img')?.getAttribute('loading')).toBe('eager');
   for (const slot of document.querySelectorAll(".ld-demo-slot")) {
-    expect(slot.textContent!.length).toBeGreaterThan(80);
+    const image = slot.querySelector('img')!;
+    expect(image.getAttribute('alt')!.length).toBeGreaterThan(20);
+    expect(image.getAttribute('src')).toEndWith('.webp');
+    expect(slot.querySelector('source')?.getAttribute('media')).toBe('(max-width:600px)');
+    expect(slot.querySelector('.product-preview')).toBeNull();
     expect(slot.querySelector("img[src^='/landing/assets/']")).toBeNull();
   }
   expect(document.querySelector("img[src^='/landing/assets/']")).toBeNull();
@@ -33,6 +34,10 @@ test("login links preserve native navigation and videos have a useful fallback",
 });
 
 test("the initial script stays lightweight and references only generated local assets", () => {
+  expect(document.querySelector('link[href="/landing/landing.css"]')).toBeNull();
+  expect(document.querySelector('script[src="/landing/landing.js"]')).toBeNull();
+  expect(document.querySelector('link[href^="/landing/landing-"]')).not.toBeNull();
+  expect(document.querySelector('script[src^="/landing/landing-"]')).not.toBeNull();
   const src = document.querySelector<HTMLScriptElement>('script[type="module"]')!.getAttribute("src")!;
   expect(src).toMatch(/^\/landing\/generated\/bootstrap-.*\.js$/);
   const script = readFileSync(resolve(root,"dist",src.slice(1)), "utf8");

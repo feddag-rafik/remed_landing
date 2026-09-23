@@ -16,6 +16,8 @@ bun run check
 
 Edit `src/landing/home.template.html` for content, `src/landing/` for demos, and `public/landing/` for static assets. Local presentation components and theme tokens are independent snapshots; update them here when the landing design changes. Generated output lives only in `dist/` and `.landing-build/`.
 
+The build minifies `public/landing/landing.css` and `public/landing/landing.js`, writes them with content-hashed filenames under `dist/landing/`, and injects those filenames into `dist/index.html`.
+
 Login buttons use ordinary `/login` links by default, suitable for backend hosting. For standalone hosting or local preview alongside the app, build with `LANDING_APP_URL=https://app.example.com bun run build` (or `LANDING_APP_URL=http://localhost:3000 PORT=3002 bun run dev`). The app URL is a base URL; `/login` is appended. No iframe or authentication runtime is bundled.
 
 ## Backend deployment

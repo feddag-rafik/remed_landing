@@ -314,6 +314,9 @@ export function mountDemo(element: HTMLElement, id: DemoId): () => void {
   let disposed = false;
   const onStatus = (status: Status) => {
     if (disposed) return;
+    // Keep the small picture detached for failure recovery, not hidden in the live DOM.
+    if (status === "ready") poster.remove();
+    else if (!poster.isConnected) shell.prepend(poster);
     poster.hidden = status === "ready";
     node.style.visibility = status === "loading" ? "hidden" : "visible";
     shell.dataset.state = status;

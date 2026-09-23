@@ -1,0 +1,13 @@
+/* Throwaway hybrid poster experiment. The player CSS is loaded on activation. */
+.ld-raster { display:block; width:100%; height:100%; }
+#remed-landing .ld-demo-slot img.ld-raster-image,
+#remed-landing #hero .ld-demo-slot img.ld-raster-image {
+  display:block; width:100%; height:auto; max-width:none; margin:0;
+  border:0; border-radius:0!important; box-shadow:none!important;
+  aspect-ratio:1000/650;
+}
+#remed-landing #hero .ld-demo-slot img.ld-raster-image { aspect-ratio:1100/820; }
+@media(max-width:600px) {
+  #remed-landing .ld-demo-slot img.ld-raster-image { aspect-ratio:740/650; }
+  #remed-landing #hero .ld-demo-slot img.ld-raster-image { aspect-ratio:740/820; }
+}

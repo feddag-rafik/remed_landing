@@ -1,0 +1,25 @@
+{
+  "key": "0c7638eb575d",
+  "images": {
+    "patient-records-desktop": "patient-records-desktop-0c7638eb575d.webp",
+    "prescriptions-desktop": "prescriptions-desktop-0c7638eb575d.webp",
+    "calendar-desktop": "calendar-desktop-0c7638eb575d.webp",
+    "accounting-desktop": "accounting-desktop-0c7638eb575d.webp",
+    "waiting-room-desktop": "waiting-room-desktop-0c7638eb575d.webp",
+    "medical-imaging-desktop": "medical-imaging-desktop-0c7638eb575d.webp",
+    "hero-desktop": "hero-desktop-0c7638eb575d.webp",
+    "document-desktop": "document-desktop-0c7638eb575d.webp",
+    "voice-desktop": "voice-desktop-0c7638eb575d.webp",
+    "assistant-desktop": "assistant-desktop-0c7638eb575d.webp",
+    "patient-records-compact": "patient-records-compact-0c7638eb575d.webp",
+    "prescriptions-compact": "prescriptions-compact-0c7638eb575d.webp",
+    "calendar-compact": "calendar-compact-0c7638eb575d.webp",
+    "accounting-compact": "accounting-compact-0c7638eb575d.webp",
+    "waiting-room-compact": "waiting-room-compact-0c7638eb575d.webp",
+    "medical-imaging-compact": "medical-imaging-compact-0c7638eb575d.webp",
+    "hero-compact": "hero-compact-0c7638eb575d.webp",
+    "document-compact": "document-compact-0c7638eb575d.webp",
+    "voice-compact": "voice-compact-0c7638eb575d.webp",
+    "assistant-compact": "assistant-compact-0c7638eb575d.webp"
+  }
+}
