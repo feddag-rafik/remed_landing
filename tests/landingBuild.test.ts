@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { JSDOM } from "jsdom";
 
@@ -23,8 +23,16 @@ test("build emits configurable native login links and self-contained assets", as
       expect(url).toStartWith("/landing/");
       expect(await Bun.file(resolve(root, "dist", url.slice(1))).exists()).toBe(true);
     }
-    const css = readFileSync(resolve(root, "dist/landing/landing.css"), "utf8");
+    const stylesheet = document.querySelector<HTMLLinkElement>('link[href^="/landing/landing-"]')?.getAttribute("href");
+    const script = document.querySelector<HTMLScriptElement>('script[src^="/landing/landing-"]')?.getAttribute("src");
+    expect(stylesheet).toMatch(/^\/landing\/landing-[A-Z0-9]+\.css$/);
+    expect(script).toMatch(/^\/landing\/landing-[A-Z0-9]+\.js$/);
+    expect(existsSync(resolve(root, "dist/landing/landing.css"))).toBe(false);
+    expect(existsSync(resolve(root, "dist/landing/landing.js"))).toBe(false);
+    const css = readFileSync(resolve(root, "dist", stylesheet!.slice(1)), "utf8");
     expect(css).toContain("/landing/fonts/inter/inter-latin-variable.woff2");
+    expect(css.trim()).not.toContain("\n");
+    expect(readFileSync(resolve(root, "dist", script!.slice(1)), "utf8").trim()).not.toContain("\n");
     expect(await Bun.file(resolve(root, "dist/landing/fonts/inter/inter-latin-variable.woff2")).exists()).toBe(true);
     const report = readFileSync(resolve(root, ".landing-build/bundle-report.json"), "utf8");
     expect(report).not.toContain("remed_web");
