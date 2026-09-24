@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve, basename } from "node:path";
 import { createHash } from "node:crypto";
 import { build } from "esbuild";
@@ -6,9 +6,17 @@ import { build } from "esbuild";
 const root = resolve(import.meta.dir, "..");
 process.chdir(root);
 const output = resolve(root, "dist/landing/generated");
+const landingOutput = resolve(root, "dist/landing");
 const temporary = resolve(root, ".landing-build");
 await mkdir(output, { recursive: true });
-await cp(resolve(root, "public/landing"), resolve(root, "dist/landing"), { recursive: true });
+await Promise.all([
+  rm(resolve(landingOutput, "landing.css"), { force: true }),
+  rm(resolve(landingOutput, "landing.js"), { force: true }),
+]);
+await cp(resolve(root, "public/landing"), landingOutput, {
+  recursive: true,
+  filter: source => !["landing.css", "landing.js"].includes(basename(source)),
+});
 await mkdir(temporary, { recursive: true });
 
 // Bun remains the runtime. Its 1.2 CSS splitting emits imports of .css instead
@@ -23,6 +31,17 @@ const common = {
   external: ["/landing/fonts/*"],
   define: { "process.env.NODE_ENV": JSON.stringify("production") },
 };
+const staticAssets = await build({
+  entryPoints: ["public/landing/landing.css", "public/landing/landing.js"],
+  outdir: landingOutput,
+  bundle: true,
+  minify: true,
+  platform: "browser",
+  target: ["es2022"],
+  entryNames: "[name]-[hash]",
+  external: ["/landing/*"],
+  metafile: true,
+});
 const browser = await build({
   ...common,
   entryPoints: ["src/landing/bootstrap.ts"],
@@ -50,6 +69,13 @@ const loginHref = appUrl ? new URL("login", appUrl.replace(/\/?$/, "/")).href : 
 if (appUrl && !/^https?:\/\//.test(loginHref)) throw new Error("LANDING_APP_URL must use HTTP or HTTPS");
 const escapedLoginHref = loginHref.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 let html = await readFile("src/landing/home.template.html", "utf8");
+const staticOutputs = Object.entries(staticAssets.metafile.outputs);
+const landingCss = staticOutputs.find(([path, meta]) => meta.entryPoint === "public/landing/landing.css" && path.endsWith(".css"));
+const landingScript = staticOutputs.find(([path, meta]) => meta.entryPoint === "public/landing/landing.js" && path.endsWith(".js"));
+if (!landingCss || !landingScript) throw new Error("Optimized landing assets missing");
+html = html
+  .replace('/landing/landing.css', `/landing/${basename(landingCss[0])}`)
+  .replace('/landing/landing.js', `/landing/${basename(landingScript[0])}`);
 html = html.replaceAll('href="/login"', `href="${escapedLoginHref}"`);
 html = html.replace(/<!-- landing-(preview|demo):([\w-]+) -->/g, (_match, type, id) => {
   if (!posters[id]) throw new Error(`Missing landing poster: ${id}`);

@@ -33,6 +33,10 @@ test("login links preserve native navigation and videos have a useful fallback",
 });
 
 test("the initial script stays lightweight and references only generated local assets", () => {
+  expect(document.querySelector('link[href="/landing/landing.css"]')).toBeNull();
+  expect(document.querySelector('script[src="/landing/landing.js"]')).toBeNull();
+  expect(document.querySelector('link[href^="/landing/landing-"]')).not.toBeNull();
+  expect(document.querySelector('script[src^="/landing/landing-"]')).not.toBeNull();
   const src = document.querySelector<HTMLScriptElement>('script[type="module"]')!.getAttribute("src")!;
   expect(src).toMatch(/^\/landing\/generated\/bootstrap-.*\.js$/);
   const script = readFileSync(resolve(root,"dist",src.slice(1)), "utf8");
